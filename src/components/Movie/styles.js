@@ -7,7 +7,7 @@ export default makeStyles((theme) => ({
   links: {
     alignItems: 'center',
     fontWeight: 'bolder',
-    TextDecoration: 'none !important',
+    textDecoration: 'none !important',
     [theme.breakpoints.up('xs')]: {
       display: 'flex',
       flexDirection: 'column',
@@ -25,7 +25,8 @@ export default makeStyles((theme) => ({
     },
   },
   title: {
-    color: 'black', // theme.palette.text.primary,
+    textDecoration: 'none',
+    color: theme.palette.text.primary,
     textOverflow: 'ellipsis',
     width: '230px',
     whiteSpace: 'nowrap',
@@ -33,6 +34,6 @@ export default makeStyles((theme) => ({
     marginTop: '10px',
     marginBottom: 0,
     textAlign: 'center',
-    TextDecoration: 'none',
+
   },
 }));
