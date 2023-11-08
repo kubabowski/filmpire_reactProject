@@ -13,7 +13,18 @@ export const tmdbApi = createApi({
     }),
     //* Get Genres
     getGenres: builder.query({
-      query: () => `genre/movie/list?api_key=${tmdbApiKey}`,
+      query: ({ genreIdOrCategoryName, page }) => {
+        //* Get Movies by Category
+        if (genreIdOrCategoryName && typeof genreIdOrCategoryName === 'string') {
+          return `movie/${genreIdOrCategoryName}?page=${page}&api_key=${tmdbApiKey}`;
+        }
+        //* Get Movies by Genre
+        if (genreIdOrCategoryName && typeof genreIdOrCategoryName === 'number') {
+          return `discover/movie?with_genres=${genreIdOrCategoryName}?page=${page}&api_key=${tmdbApiKey}`;
+        }
+        //* Get Popular Movies
+        return `genre/movie/list?api_key=${tmdbApiKey}`;
+      },
     }),
   }),
 });
