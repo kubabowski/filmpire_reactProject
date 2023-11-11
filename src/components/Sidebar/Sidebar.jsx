@@ -26,6 +26,8 @@ const Sidebar = ({ setMobileOpen }) => {
   const { data, isFetching } = useGetGenresQuery();
   const dispatch = useDispatch();
 
+  console.log(genreIdOrCategoryName);
+
   return (
     <>
 
@@ -58,8 +60,8 @@ const Sidebar = ({ setMobileOpen }) => {
             <CircularProgress size="4rem" />
           </Box>
         ) : (
-          data.genres.map(({ id, name }) => (
-            <Link key={id} className={classes.links} to="/">
+          data?.genres.map(({ name, id }) => (
+            <Link key={name} className={classes.links} to="/">
               <ListItem onClick={() => dispatch(selectGenreOrCategory(id))} button>
                 <ListItemIcon>
                   <img src={genreIcons[name.toLowerCase()]} className={classes.genreImages} height={30} />

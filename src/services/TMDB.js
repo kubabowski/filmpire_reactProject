@@ -7,12 +7,31 @@ export const tmdbApi = createApi({
   reducerPath: 'tmdbApi',
   baseQuery: fetchBaseQuery({ baseUrl: 'https://api.themoviedb.org/3' }),
   endpoints: (builder) => ({
-    //* Get Movies by [Type]
-    getMovies: builder.query({
-      query: () => `movie/popular?page=${page}&api_key=${tmdbApiKey}`,
-    }),
+    // //* Get Movies by [Type]
+    // getMovies: builder.query({
+    //   query: () => `movie/popular?page=${page}&api_key=${tmdbApiKey}`,
+    // }),
+    // //* Get Genres
+    // getGenres: builder.query({
+    //   query: ({ genreIdOrCategoryName, page }) => {
+    //     //* Get Movies by Category
+    //     if (genreIdOrCategoryName && typeof genreIdOrCategoryName === 'string') {
+    //       return `movie/${genreIdOrCategoryName}?page=${page}&api_key=${tmdbApiKey}`;
+    //     }
+    //     //* Get Movies by Genre
+    //     if (genreIdOrCategoryName && typeof genreIdOrCategoryName === 'number') {
+    //       return `discover/movie?with_genres=${genreIdOrCategoryName}?page=${page}&api_key=${tmdbApiKey}`;
+    //     }
+    //     //* Get Popular Movies
+    //     return `genre/movie/list?api_key=${tmdbApiKey}`;
+    //   },
+    // }),
     //* Get Genres
     getGenres: builder.query({
+      query: () => `genre/movie/list?api_key=${tmdbApiKey}`,
+    }),
+    //* Get Movies by [Type]
+    getMovies: builder.query({
       query: ({ genreIdOrCategoryName, page }) => {
         //* Get Movies by Category
         if (genreIdOrCategoryName && typeof genreIdOrCategoryName === 'string') {
@@ -20,10 +39,11 @@ export const tmdbApi = createApi({
         }
         //* Get Movies by Genre
         if (genreIdOrCategoryName && typeof genreIdOrCategoryName === 'number') {
-          return `discover/movie?with_genres=${genreIdOrCategoryName}?page=${page}&api_key=${tmdbApiKey}`;
+          console.log('tutaj');
+          return `discover/movie?with_genres=${genreIdOrCategoryName}&page=${page}&api_key=${tmdbApiKey}`;
         }
         //* Get Popular Movies
-        return `genre/movie/list?api_key=${tmdbApiKey}`;
+        return `movie/popular?page=${page}&api_key=${tmdbApiKey}`;
       },
     }),
   }),
