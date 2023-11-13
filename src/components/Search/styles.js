@@ -17,7 +17,6 @@ export default makeStyles((theme) => ({
     [theme.breakpoints.down('sm')]: {
       marginTop: '-10px',
       marginBottom: '10px',
-    //   marginLeft: '10px',
     },
   },
 

@@ -19,16 +19,16 @@ const Search = () => {
   };
 
   return (
-    <div className="classes.searchContainer">
+    <div className={classes.searchContainer}>
       <TextField
-        onKeyPress={handleKeyPress}
+        onKeyDown={handleKeyPress}
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         variant="standard"
         InputProps={{
           className: classes.input,
           startAdornment: (
-            <InputAdornment>
+            <InputAdornment position="start">
               <SearchIcon />
             </InputAdornment>
           ),
