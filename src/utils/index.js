@@ -28,15 +28,16 @@ export const createSessionId = async () => {
 
   if (token) {
     try {
-      const { data: { session_id } } = await moviesApi('authentication/session/new', {
+      const { data: { session_id } } = await moviesApi.post('authentication/session/new', {
         request_token: token,
       });
 
-      localStorage.Storage.seItem('session_id', session_id);
+      localStorage.Storage.setItem('session_id', session_id);
 
       return session_id;
     } catch (error) {
-      console.log('Sorry, token could not be created');
+      console.log(error);
+      console.log('im here');
     }
   }
 };
