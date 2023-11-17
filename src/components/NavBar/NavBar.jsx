@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { setUser, userSelector } from '../../features/auth';
 import { Sidebar, Search } from '..'
-import { fetchToken, createSessionId, moviesApi  } from '../../utils';
+import { fetchToken, createSessionId, moviesApi, moviesApi2  } from '../../utils';
 import useStyles from './styles';
 
 const NavBar = () => {
@@ -18,7 +18,7 @@ const NavBar = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
 
-  console.log(user);
+  // console.log(user);
 
   const token = localStorage.getItem('request_token');
   const sessionIdFromLocalStorage = localStorage.getItem('session_id');
@@ -28,14 +28,11 @@ const NavBar = () => {
       if(token) {
         if(sessionIdFromLocalStorage){
           const { data: userData } = await moviesApi.get(`/account?session_id=${sessionIdFromLocalStorage}`);
-
           dispatch(setUser(userData));
 
         } else {
           const sessionId = await createSessionId();
-
-          const { data: userData } = await moviesApi.get(`/account?session_id=${sessionId}`);
-
+          const { data: userData } = await moviesApi2.get(`/account?session_id=${sessionId}`);
           dispatch(setUser(userData));
         }
       }
