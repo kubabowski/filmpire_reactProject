@@ -7,7 +7,7 @@ export const moviesApi = axios.create({
   },
 });
 
-export const moviesApi2 = axios.create({
+export const moviesApi22 = axios.create({
   baseURL: 'https://api.themoviedb.org/',
   params: {
     api_key: process.env.REACT_APP_TMDB_KEY,
