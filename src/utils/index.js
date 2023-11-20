@@ -7,13 +7,6 @@ export const moviesApi = axios.create({
   },
 });
 
-export const moviesApi2 = axios.create({
-  baseURL: 'https://api.themoviedb.org/',
-  params: {
-    api_key: process.env.REACT_APP_TMDB_KEY,
-  },
-});
-
 export const fetchToken = async () => {
   try {
     const { data } = await moviesApi.get('/authentication/token/new');
@@ -35,7 +28,7 @@ export const createSessionId = async () => {
 
   if (token) {
     try {
-      const { data: { session_id } } = await moviesApi.post('authentication/session/new', {
+      const { data: { session_id } } = await moviesApi.post('/authentication/session/new', {
         request_token: token,
       });
 
@@ -43,8 +36,7 @@ export const createSessionId = async () => {
 
       return session_id;
     } catch (error) {
-      console.log('heeere');
-      console.log(error);
+      console.log('the error has occured:', error);
     }
   }
 };

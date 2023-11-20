@@ -11,14 +11,14 @@ import { fetchToken, createSessionId, moviesApi, moviesApi2  } from '../../utils
 import useStyles from './styles';
 
 const NavBar = () => {
-  const { isAuthenticated, user } = useSelector(userSelector)
+  const { isAuthenticated, user } = useSelector(userSelector);
   const [mobileOpen, setMobileOpen] = useState(false);
   const classes = useStyles();
   const isMobile = useMediaQuery('(max-width:600px)');
   const theme = useTheme();
   const dispatch = useDispatch();
 
-  // console.log(user);
+  console.log(user);
 
   const token = localStorage.getItem('request_token');
   const sessionIdFromLocalStorage = localStorage.getItem('session_id');
@@ -27,19 +27,44 @@ const NavBar = () => {
     const logInUser = async () => {
       if(token) {
         if(sessionIdFromLocalStorage){
+          console.log('1');
           const { data: userData } = await moviesApi.get(`/account?session_id=${sessionIdFromLocalStorage}`);
           dispatch(setUser(userData));
 
         } else {
+          console.log('2');
           const sessionId = await createSessionId();
-          const { data: userData } = await moviesApi2.get(`/account?session_id=${sessionId}`);
+          const { data: userData } = await moviesApi.get(`/account?session_id=${sessionId}`);
           dispatch(setUser(userData));
         }
       }
     };
 
     logInUser();
-  }, [token])
+  }, [token]);
+  // useEffect(() => {
+  //   const logInUser = async () => {
+  //     if (token) {
+  //       try {
+  //         if (sessionIdFromLocalStorage) {
+  //           const { data: userData } = await moviesApi.get(`/account?session_id=${sessionIdFromLocalStorage}`);
+
+  //           dispatch(setUser(userData));
+  //         } else {
+  //           const sessionId = await createSessionId();
+  //           const { data: userData } = await moviesApi.get(`/account?session_id=${sessionId}`);
+
+  //           dispatch(setUser(userData));
+  //         }
+  //       } catch (error) {
+  //         console.error('An error occurred while logging in:', error);
+  //       }
+  //     }
+  //   };
+  
+  //   logInUser();
+  // }, [token, sessionIdFromLocalStorage]);
+  
 
   return (
     <>
@@ -70,7 +95,7 @@ const NavBar = () => {
           ) : (
             <Button color="inherit" 
             component={Link}
-            to={`/profile/:id`}
+            to={`/profile/${user.id}`}
             className={classes.linkButton}
             onClick={() => {}}>
               {!isMobile && <>My Movies &nbsp;</>}
