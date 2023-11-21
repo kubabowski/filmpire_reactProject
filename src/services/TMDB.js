@@ -22,7 +22,7 @@ export const tmdbApi = createApi({
         if (genreIdOrCategoryName && typeof genreIdOrCategoryName === 'string') {
           return `movie/${genreIdOrCategoryName}?page=${page}&api_key=${tmdbApiKey}`;
         }
-        //* Get Movies by Genre
+        //* Get Movies by Genre */
         if (genreIdOrCategoryName && typeof genreIdOrCategoryName === 'number') {
           console.log('tutaj');
           return `discover/movie?with_genres=${genreIdOrCategoryName}&page=${page}&api_key=${tmdbApiKey}`;
@@ -33,10 +33,15 @@ export const tmdbApi = createApi({
         return `movie/popular?page=${page}&api_key=${tmdbApiKey}`;
       },
     }),
+    //* Get Movie */
+    getMovie: builder.query({
+      query: (id) => `/movie/${id}?append_to_response=videos,credits&api_key=${tmdbApiKey}`,
+    }),
   }),
 });
 
 export const {
   useGetMoviesQuery,
   useGetGenresQuery,
+  useGetMovieQuery,
 } = tmdbApi;
