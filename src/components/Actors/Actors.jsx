@@ -6,15 +6,15 @@ import { ArrowBack } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import useStyles from './styles';
 import { useGetActorQuery, useGetMoviesbyActorQuery } from '../../services/TMDB';
-import { MovieList, Movielist } from '..';
+import { MovieList, Pagination } from '..';
 
 const Actors = () => {
   const { id } = useParams();
-  const { data, isFetching, error } = useGetActorQuery({ actor_id: id });
   const history = useNavigate();
   const classes = useStyles();
-  const page = 1;
+  const [page, setPage] = useState(1);
   const { data: movies } = useGetMoviesbyActorQuery({ id, page });
+  const { data, isFetching, error } = useGetActorQuery({ actor_id: id, page });
 
   if (isFetching) {
     return (
@@ -60,6 +60,7 @@ const Actors = () => {
       <Box margin="2rem 0">
         <Typography variant="h2" gutterBottom align="center">Movies</Typography>
         {movies && <MovieList movies={movies} numberOfMovies={12} />}
+        <Pagination currentPage={page} setPage={setPage} totalPages={movies?.total_pages} />
       </Box>
     </>
   );

@@ -4,11 +4,20 @@ import { Typography, Button, Box } from '@mui/material';
 import { ExitToApp } from '@mui/icons-material';
 
 import { userSelector } from '../../features/auth';
+import { useGetListQuery } from '../../services/TMDB';
+
+import { RatedCards } from '..';
 
 const Profile = () => {
   const { user } = useSelector(userSelector);
 
-  const favoriteMovies = [];
+  const { data: favoriteMovies, refetch: refetchFavorites } = useGetListQuery({ listName: 'favorite/movies', accountId: user.id, sessionId: localStorage.getItem('session_id'), page: 1 });
+  const { data: watchListMovies, refetch: refetchWatchlist } = useGetListQuery({ listName: 'watchlist/movies', accountId: user.id, sessionId: localStorage.getItem('session_id'), page: 1 });
+
+  useEffect(() => {
+    refetchFavorites();
+    refetchWatchlist();
+  }, []);
 
   const logout = () => {
     localStorage.clear();
@@ -23,11 +32,12 @@ const Profile = () => {
           Logout &nbsp; <ExitToApp />
         </Button>
       </Box>
-      {!favoriteMovies.length
+      {!favoriteMovies?.results?.length && !watchListMovies?.results?.length
         ? <Typography variant="h5">Add favorites or watchlist some movies to see them here!</Typography>
         : (
           <Box>
-            FAVORITE MOVIES
+            <RatedCards title="Favorite Movies" data={favoriteMovies} />
+            <RatedCards title="Watchlist" data={watchListMovies} />
           </Box>
         )}
     </Box>

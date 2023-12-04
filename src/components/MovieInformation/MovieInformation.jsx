@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, Typography, Button, ButtonGroup, Grid, Box, CircularProgress, useMediaQuery, Rating } from '@mui/material';
 import { Movie as MovieIcon, Theaters, Language, PlusOne, Favorite, FavoriteBorderOutlined, Remove, ArrowBack } from '@mui/icons-material';
 import { Link, useParams } from 'react-router-dom';
@@ -9,22 +9,53 @@ import { selectGenreOrCategory } from '../../features/currentGenreOrCategory';
 import genreIcons from '../../assets/genres';
 import  { MovieList } from '..';
 
-import { useGetMovieQuery, useGetRecommendationsQuery } from '../../services/TMDB';
+import { useGetListQuery, useGetMovieQuery, useGetRecommendationsQuery } from '../../services/TMDB';
 import useStyles from './styles';
+import { userSelector } from '../../features/auth';
 
 const MovieInformation = () => {
+  const { user } = useSelector(userSelector);
   const { id } = useParams();
-  const { data, isFetching, error } = useGetMovieQuery(id);
   const classes = useStyles();
   const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
-
+  
+  const { data, isFetching, error } = useGetMovieQuery(id);
+  const { data: favoriteMovies } = useGetListQuery({ listName: 'favorite/movies', accountId: user.id, sessionId: localStorage.getItem('session_id'), page: 1});
+  const { data: watchListMovies } = useGetListQuery({ listName: 'watchlist/movies', accountId: user.id, sessionId: localStorage.getItem('session_id'), page: 1});
   const { data: recommendations, isFetching: isRecommendationsFetching } = useGetRecommendationsQuery({ list: '/recommendations', movie_id: id });
 
-  const isMovieFavorited = true;
-  const isMovieWatchListed = true;
-  const addToFavorites = () => {};
-  const addToWatchList = () => {};
+  
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [isMovieWatchListed, setIsMovieWatchListed] = useState(false);
+
+  useEffect(()=> {
+      setIsFavorite(!!favoriteMovies?.results?.find((movie)=> movie?.id === data?.id ));
+  }, [favoriteMovies, data]);
+
+  useEffect(()=> {
+    setIsMovieWatchListed(!!watchListMovies?.results?.find((movie)=> movie?.id === data?.id ));
+}, [watchListMovies, data]);
+
+  const addToFavorites = async () => {
+    await axios.post(`https://api.themoviedb.org/3/account/${user.id}/favorite?api_key=${process.env.REACT_APP_TMDB_KEY}&session_id=${localStorage.getItem('session_id')}`,{
+      media_type: 'movie',
+      media_id: id,
+      favorite: !isFavorite
+    });
+
+    setIsFavorite((prev) => !prev)
+  };
+
+  const addToWatchList = async () => {
+    await axios.post(`https://api.themoviedb.org/3/account/${user.id}/watchlist?api_key=${process.env.REACT_APP_TMDB_KEY}&session_id=${localStorage.getItem('session_id')}`,{
+      media_type: 'movie',
+      media_id: id,
+      watchlist: !isMovieWatchListed
+    });
+
+    setIsMovieWatchListed((prev) => !prev)
+  };
 
 console.log(recommendations);
 
@@ -46,14 +77,14 @@ console.log(recommendations);
 
   return (
     <Grid container className={classes.containerSpaceAround}>
-      <Grid item sm={12} lg={4}>
+      <Grid item sm={12} lg={4} style={{marginBottom: '30px', display: 'flex'}}>
         <img
           className={classes.poster}
           src={`https://image.tmdb.org/t/p/w500/${data?.poster_path}`}
           alt={data?.title}
         />
       </Grid>
-      <Grid item container direction="column" lg="7">
+      <Grid item container direction="column" lg={7}>
         <Typography variant="h3" align="center" gutterBottom>
           {data?.title} ({data.release_date.split('-')[0]})
         </Typography>
@@ -94,7 +125,7 @@ console.log(recommendations);
         <Grid item container spacing={2}>
           {data && data.credits.cast.map((character, i) => (
             character.profile_path && (
-              <Grid key={1} item xs={4} md={2} component={Link} to={`/actors/${character.id}`} style={{ textDecoration: 'none' }}>
+              <Grid key={i} item xs={4} md={2} component={Link} to={`/actors/${character.id}`} style={{ textDecoration: 'none' }}>
                 <img className={classes.castImage} src={`https://image.tmdb.org/t/p/w500/${character.profile_path}`} alt={character.name} />
                 <Typography color="textPrimary">{character?.name}</Typography>
                 <Typography color="textSecondary">{character.character.split('/')[0]}</Typography>
@@ -113,16 +144,15 @@ console.log(recommendations);
             </Grid>
             <Grid item xs={12} sm={6} className={classes.buttonsContainer}>
               <ButtonGroup size="medium" variant="outlined">
-                <Button onClick={addToFavorites} endIcon={isMovieFavorited ? <FavoriteBorderOutlined /> : <Favorite/>}>
-                  {isMovieFavorited ? 'Unfavorite' : 'Favorite'}
+                <Button onClick={addToFavorites} endIcon={isFavorite ? <FavoriteBorderOutlined /> : <Favorite/>}>
+                  {isFavorite ? 'Unfavorite' : 'Favorite'}
                 </Button>
                 <Button onClick={addToWatchList} endIcon={isMovieWatchListed ? <Remove /> : <PlusOne/>}>
-                  {/* {isMovieWatchListed ? 'Remove from Watchlist' : 'Add from Watchlist'} */}
-                  Watchlist
+                  {isMovieWatchListed ? 'Remove from Watchlist' : 'Add to Watchlist'}
                 </Button>
                 <Button endIcon={<ArrowBack />} sx={{ borderColor: 'primary.main'}}>
                   <Typography component={Link} to='/' color="inherit" variant="subtitle2" style={{textDecoration: 'none'}}>
-                    Baack
+                    Back
                   </Typography>
                 </Button>
               </ButtonGroup>
@@ -139,7 +169,7 @@ console.log(recommendations);
                 : <Box>Sorry, nothing was found </Box>
               }
       </Box>
-      {/* <Modal
+      <Modal
         closeAfterTransition
         className={classes.modal}
         open={open}
@@ -155,7 +185,7 @@ console.log(recommendations);
           allow="autoplay"
         />
       )}
-      </Modal> */}
+      </Modal>
     </Grid>
   );
 };
